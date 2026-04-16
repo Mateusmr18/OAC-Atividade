@@ -1,0 +1,17 @@
+module mux4to1_32bits (
+    input  logic [31:0] a, b, c, d,  // 4 entradas de 32 bits
+    input  logic [1:0]  sel,         // Seletor de 2 bits (4 combinações)
+    output logic [31:0] f            // Saída de 32 bits
+);
+
+    always_comb begin
+        case (sel)
+            2'b00: f = a;
+            2'b01: f = b;
+            2'b10: f = c;
+            2'b11: f = d;
+            default: f = 32'b0;      // Segurança para simulação
+        endcase
+    end
+
+endmodule
