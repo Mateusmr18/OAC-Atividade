@@ -1,0 +1,32 @@
+// program.hex — $readmemh format for sc_imem
+// MMIO test: SW, KEY reads; LEDR, LEDG writes; dmem store for verification
+//
+// Register usage:
+//   x1  = 0x400       MMIO base address (loaded from data mem word 0)
+//   x2  = 0x0003FFFF  all 18 LEDR bits set (loaded from data mem word 1)
+//   x3  = 0x000001FF  all 9  LEDG bits set (loaded from data mem word 2)
+//   x4  = SW[17:0]    slide-switch reading (MMIO @ 0x400)
+//   x5  = KEY[3:0]    push-button reading  (MMIO @ 0x404)
+//
+// MMIO address map:
+//   0x400  SW   read
+//   0x404  KEY  read
+//   0x408  LEDR write
+//   0x40C  LEDG write
+//
+// Instruction encoding reference:
+//   R-type : funct7[31:25] rs2[24:20] rs1[19:15] funct3[14:12] rd[11:7]  opcode[6:0]
+//   I-type : imm[31:20]    rs1[19:15] funct3[14:12] rd[11:7]   opcode[6:0]
+//   S-type : imm[11:5][31:25] rs2[24:20] rs1[19:15] funct3[14:12] imm[4:0][11:7] opcode[6:0]
+//   B-type : imm[12|10:5][31:25] rs2[24:20] rs1[19:15] funct3[14:12] imm[4:1|11][11:7] opcode[6:0]
+
+@000 00002083  // lw  x1,  0(x0)   x1 = data[0] = 0x00000400 (MMIO base)
+@001 00402103  // lw  x2,  4(x0)   x2 = data[1] = 0x0003FFFF (LEDR all-ones)
+@002 00802183  // lw  x3,  8(x0)   x3 = data[2] = 0x000001FF (LEDG all-ones)
+@003 0020A423  // sw  x2,  8(x1)   LEDR <= 0x3FFFF  (addr 0x400+8 = 0x408)
+@004 0030A623  // sw  x3, 12(x1)   LEDG <= 0x1FF    (addr 0x400+C = 0x40C)
+@005 0000A203  // lw  x4,  0(x1)   x4 = SW[17:0]    (addr 0x400)
+@006 0040A283  // lw  x5,  4(x1)   x5 = KEY[3:0]    (addr 0x404)
+@007 00402623  // sw  x4, 12(x0)   dmem[3] = SW  value  (byte addr 12)
+@008 00502823  // sw  x5, 16(x0)   dmem[4] = KEY value  (byte addr 16)
+@009 00000063  // beq x0, x0, 0    halt (infinite loop at PC=0x024)

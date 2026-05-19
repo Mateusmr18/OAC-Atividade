@@ -1,0 +1,14 @@
+// data.hex — $readmemh format for sc_dmem
+// MMIO test — initial values read by the program
+//
+// word 000 (byte  0) : 0x00000400 = MMIO base address     -> lw x1,  0(x0)
+// word 001 (byte  4) : 0x0003FFFF = all 18 LEDR bits set  -> lw x2,  4(x0)
+// word 002 (byte  8) : 0x000001FF = all  9 LEDG bits set  -> lw x3,  8(x0)
+//
+// Values written at runtime (SW instructions):
+// word 003 (byte 12) : SW[17:0]  value (testbench drives SW = 18'h15555)
+// word 004 (byte 16) : KEY[3:0]  value (testbench drives KEY = 4'hA)
+
+@000 00000400
+@001 0003FFFF
+@002 000001FF
